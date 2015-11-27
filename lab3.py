@@ -3,7 +3,7 @@ import copy
 N = 4
 M = 20 - N
 A = 0.1 * M + 0.01 * N
-B = 0.2 * M + 0.02 * N + 0.001*M*N + 0.001*N*N
+B = 0.2 * M + 0.02 * N + 0.01*M*N + 0.001*N*N
 
 x_star = [
     [1],
@@ -233,6 +233,7 @@ def do_method_investigation(method, accuracy_list):
             print("\nAccuracy: ", accuracy)
             x_by_method = method(copy_of_system)
             print("Answer:\n" + matrix_to_str(x_by_method) + "\n")
+            
         except MethodError as e:
             print(e)
 
