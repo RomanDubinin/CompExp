@@ -10,6 +10,22 @@ n = 50
 def function_to_integrate(x, y):
     return 30*y*(x - 0.2)*(x - 0.7)
 
+def df_x(x, y):
+    return y*(60*x - 27)
+
+def df_xx(x, y):
+    return y*60
+
+def df_y(x, y):
+    return 30*(x - 0.7)*(x - 0.2)
+
+def df_yy(x, y):
+    return 0
+
+def df_xy(x, y):
+    return 60*x - 27
+
+
 def explicit_eiler(f, x_points, y0, h):
     y_points = []
     y_points.append(y0)
@@ -73,6 +89,23 @@ def extrapolation_adams(f, x_points, y0, h):
     
     return y_points[:-1]
 
+def teilor_3(f, df_x, df_y, x_points, y0, h):
+    y_points = []
+    y_points.append(y0)
+    for k in range(0, len(x_points)):
+        next_y = y_points[k] + f(x_points[k], y_points[k])*h + (h**2)/2 * (df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k]))
+        y_points.append(next_y)
+    
+    return y_points[:-1]
+
+def teilor_4(f, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, h):
+    y_points = []
+    y_points.append(y0)
+    for k in range(len(x_points)):
+        next_y = y_points[k] + f(x_points[k], y_points[k])*h + (h**2)/2 * (df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k])) + (h**3)/3 * (df_xx(x_points[k], y_points[k]) + 2*f(x_points[k], y_points[k])*df_xy(x_points[k], y_points[k]) + df_yy(x_points[k], y_points[k])*(f(x_points[k], y_points[k])**2) + df_y(x_points[k], y_points[k])*(df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k])*f(x_points[k], y_points[k])))
+        y_points.append(next_y)
+    
+    return y_points[:-1]
 
 output_file("lab_2_1.html")   
 p = figure(title="30*y*(x - 0.2)*(x - 0.7), " + str(n) + "points", plot_width=1100, plot_height=600)
@@ -82,15 +115,17 @@ x_points = np.linspace(0, 1, n, endpoint=True)
 
 y_points = explicit_eiler(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "red", legend="Эйлер")
+p.circle(x=x_points, y=y_points, color = "red", legend="Эйлер")
 
 y_points = coshi(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "blue", legend="Коши")
 
 y_points = implicit_eiler(function_to_integrate, x_points, y0, 1/n)
-p.line(x=x_points, y=y_points, color = "green", legend="неявный Эйлер")
+p.line(x=x_points, y=y_points, color = "red", line_dash=[4, 4], legend="неявный Эйлер")
 
 y_points = eiler_With_recount(function_to_integrate, x_points, y0, 1/n)
-p.line(x=x_points, y=y_points, color = "violet", legend="Эйлер с пересчётом")
+p.line(x=x_points, y=y_points, color = "red", legend="Эйлер с пересчётом")
+p.square(x=x_points, y=y_points, color = "red", legend="Эйлер с пересчётом")
 
 y_points = runge_kutta(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "lime", legend="Рунге-Кутта 4 го порядка")
@@ -98,6 +133,13 @@ p.line(x=x_points, y=y_points, color = "lime", legend="Рунге-Кутта 4 �
 y_points = extrapolation_adams(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "orange", legend="экстраполяционный метод Адамса(k=2)")
 
+y_points = teilor_3(function_to_integrate, df_x, df_y, x_points, y0, 1/n)
+p.line(x=x_points, y=y_points, color = "green", legend="Тейлор 3 го порядка")
+p.triangle(x=x_points, y=y_points, color = "green", legend="Тейлор 3 го порядка")
+
+y_points = teilor_3(function_to_integrate, df_x, df_y, x_points, y0, 1/n)
+p.line(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
+p.square(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
 
 p.legend.orientation = "top_left"
 show(p)
