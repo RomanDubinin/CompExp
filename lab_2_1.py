@@ -93,7 +93,10 @@ def teilor_3(f, df_x, df_y, x_points, y0, h):
     y_points = []
     y_points.append(y0)
     for k in range(0, len(x_points)):
-        next_y = y_points[k] + f(x_points[k], y_points[k])*h + (h**2)/2 * (df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k]))
+        next_y = y_points[k] \
+        + f(x_points[k], y_points[k])*h \
+        + (df_x(x_points[k], y_points[k]) \
+        + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k]))*(h**2)/2
         y_points.append(next_y)
     
     return y_points[:-1]
@@ -102,7 +105,14 @@ def teilor_4(f, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, h):
     y_points = []
     y_points.append(y0)
     for k in range(len(x_points)):
-        next_y = y_points[k] + f(x_points[k], y_points[k])*h + (h**2)/2 * (df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k])) + (h**3)/3 * (df_xx(x_points[k], y_points[k]) + 2*f(x_points[k], y_points[k])*df_xy(x_points[k], y_points[k]) + df_yy(x_points[k], y_points[k])*(f(x_points[k], y_points[k])**2) + df_y(x_points[k], y_points[k])*(df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k])*f(x_points[k], y_points[k])))
+        second_summand = f(x_points[k], y_points[k])*h
+        third_summand = (df_x(x_points[k], y_points[k]) + df_y(x_points[k], y_points[k]) * f(x_points[k], y_points[k]))*(h**2)/2
+        fourth_summand = (df_xx(x_points[k], y_points[k]) + \
+                         2*f(x_points[k], y_points[k])*df_xy(x_points[k], y_points[k]) \
+                         + df_yy(x_points[k], y_points[k])*(f(x_points[k], y_points[k])**2) \
+                         + df_y(x_points[k], y_points[k])*(df_x(x_points[k], y_points[k]) \
+                         + df_y(x_points[k], y_points[k])*f(x_points[k], y_points[k])))*(h**3)/3
+        next_y = y_points[k] + second_summand + third_summand + fourth_summand
         y_points.append(next_y)
     
     return y_points[:-1]
@@ -137,7 +147,7 @@ y_points = teilor_3(function_to_integrate, df_x, df_y, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "green", legend="Тейлор 3 го порядка")
 p.triangle(x=x_points, y=y_points, color = "green", legend="Тейлор 3 го порядка")
 
-y_points = teilor_3(function_to_integrate, df_x, df_y, x_points, y0, 1/n)
+y_points = teilor_4(function_to_integrate, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
 p.square(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
 
