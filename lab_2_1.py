@@ -2,10 +2,9 @@ from bokeh.plotting import figure, output_file, show
 import bokeh
 import itertools
 import numpy as np
-
+import sys
 
 y0 = 0.1
-n = 50
 
 def function_to_integrate(x, y):
     return 30*y*(x - 0.2)*(x - 0.7)
@@ -118,6 +117,8 @@ def teilor_4(f, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, h):
     return y_points[:-1]
 
 output_file("lab_2_1.html")   
+
+n = int(sys.argv[1])
 p = figure(title="30*y*(x - 0.2)*(x - 0.7), " + str(n) + "points", plot_width=1100, plot_height=600)
 
 
@@ -138,7 +139,7 @@ p.line(x=x_points, y=y_points, color = "red", legend="Эйлер с пересч
 p.square(x=x_points, y=y_points, color = "red", legend="Эйлер с пересчётом")
 
 y_points = runge_kutta(function_to_integrate, x_points, y0, 1/n)
-p.line(x=x_points, y=y_points, color = "lime", legend="Рунге-Кутта 4 го порядка")
+p.line(x=x_points, y=y_points, color = "purple", legend="Рунге-Кутта 4 го порядка")
 
 y_points = extrapolation_adams(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "orange", legend="экстраполяционный метод Адамса(k=2)")
