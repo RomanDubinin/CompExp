@@ -2,6 +2,7 @@ from bokeh.plotting import figure, output_file, show
 import bokeh
 import itertools
 import numpy as np
+import math
 import sys
 
 y0 = 0.1
@@ -24,6 +25,8 @@ def df_yy(x, y):
 def df_xy(x, y):
     return 60*x - 27
 
+def original_func(x):
+    return 0.1 * math.exp(x*(10*x*x - 13.5*x + 4.2))
 
 def explicit_eiler(f, x_points, y0, h):
     y_points = []
@@ -116,11 +119,11 @@ def teilor_4(f, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, h):
     
     return y_points[:-1]
 
-output_file("lab_2_1.html")   
-
 n = int(sys.argv[1])
-p = figure(title="30*y*(x - 0.2)*(x - 0.7), " + str(n) + "points", plot_width=1100, plot_height=600)
 
+output_file("{0}_points.html".format(n))   
+
+p = figure(title="30*y*(x - 0.2)*(x - 0.7), " + str(n) + "points", plot_width=1100, plot_height=600)
 
 x_points = np.linspace(0, 1, n, endpoint=True)
 
@@ -151,6 +154,11 @@ p.triangle(x=x_points, y=y_points, color = "green", legend="Тейлор 3 го 
 y_points = teilor_4(function_to_integrate, df_x, df_y, df_xx, df_yy, df_xy, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
 p.square(x=x_points, y=y_points, color = "green", legend="Тейлор 4 го порядка")
+
+
+y_points = [original_func(x) for x in x_points]
+p.line(x=x_points, y=y_points, color = "black", legend="origin")
+p.circle(x=x_points, y=y_points, color = "black", legend="origin")
 
 p.legend.orientation = "top_left"
 show(p)
