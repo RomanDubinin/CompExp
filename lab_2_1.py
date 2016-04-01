@@ -40,32 +40,32 @@ def explicit_eiler(f, x_points, y0, h):
 def implicit_eiler(f, x_points, y0, h):
     y_points = []
     y_points.append(y0)
-    for k in range(len(x_points)):
+    for k in range(len(x_points)-1):
         subsidiary_y = y_points[k] + f(x_points[k], y_points[k])*h
-        next_y = y_points[k] + f(x_points[k], subsidiary_y) * h
+        next_y = y_points[k] + f(x_points[k+1], subsidiary_y) * h
         y_points.append(next_y)
     
-    return y_points[:-1]
+    return y_points
 
 def coshi(f, x_points, y0, h):
     y_points = []
     y_points.append(y0)
-    for k in range(len(x_points)):
+    for k in range(len(x_points)-1):
         subsidiary_y = y_points[k] + f(x_points[k], y_points[k])*h/2
         next_y = y_points[k] + f(x_points[k] + h/2, subsidiary_y) * h
         y_points.append(next_y)
     
-    return y_points[:-1]
+    return y_points
 
 def eiler_With_recount(f, x_points, y0, h):
     y_points = []
     y_points.append(y0)
-    for k in range(len(x_points)):
+    for k in range(len(x_points)-1):
         subsidiary_y = y_points[k] + f(x_points[k], y_points[k])*h
-        next_y = y_points[k] + (f(x_points[k], y_points[k]) + f(x_points[k], subsidiary_y))*h/2
+        next_y = y_points[k] + (f(x_points[k], y_points[k]) + f(x_points[k+1], subsidiary_y))*h/2
         y_points.append(next_y)
     
-    return y_points[:-1]
+    return y_points
 
 def runge_kutta(f, x_points, y0, h):
     y_points = []
@@ -125,7 +125,8 @@ output_file("{0}_points.html".format(n))
 
 p = figure(title="30*y*(x - 0.2)*(x - 0.7), " + str(n) + "points", plot_width=1100, plot_height=600)
 
-x_points = np.linspace(0, 1, n, endpoint=True)
+x_points = np.linspace(0, 1, n+1, endpoint=True)
+#x_points = [x/n for x in range(n+1)]
 
 y_points = explicit_eiler(function_to_integrate, x_points, y0, 1/n)
 p.line(x=x_points, y=y_points, color = "red", legend="Эйлер")
